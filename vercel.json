@@ -11,10 +11,6 @@
       "dest": "/static/$1"    
     },
     {
-      "src": "/",             
-      "dest": "/static/index.html" 
-    },
-    {
       "src": "/(.*)",        
       "dest": "main.py"       
     }
