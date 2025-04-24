@@ -35,7 +35,7 @@ docker-compose.yml
 
 # Alembic cache/temp
 alembic.ini # Mungkin ingin disertakan jika URL dibaca saat build? Tapi lebih aman set saat run.
-alembic/ # Folder migrasi perlu disalin, jadi jangan ignore ini
+# alembic/ # Folder migrasi perlu disalin, jadi jangan ignore ini
 
 # Node modules (jika ada sisa dari setup tailwind build)
 node_modules/
