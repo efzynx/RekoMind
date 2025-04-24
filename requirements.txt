@@ -2,8 +2,9 @@
 
 fastapi # Versi bisa ditambahkan jika perlu, misal >=0.100.0
 uvicorn[standard] # Untuk menjalankan server
-sqlalchemy[asyncio] # SQLAlchemy dengan dukungan asyncio
-asyncpg # <-- DRIVER ASYNC YANG DIPERLUKAN
+sqlalchemy[asyncio,postgresql_asyncpg]
+# sqlalchemy[asyncio] # SQLAlchemy dengan dukungan asyncio
+# asyncpg # <-- DRIVER ASYNC YANG DIPERLUKAN
 alembic
 python-multipart
 passlib[bcrypt]
