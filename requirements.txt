@@ -1,17 +1,18 @@
-fastapi-users[sqlalchemy]
-sqlalchemy[asyncio]
-psycopg2-binary
-alembic # Untuk migrasi db
-python-multipart # Untuk data form login
-passlib[bcrypt] # Untuk hashing password
-email-validator # Untuk validasi email
-python-jose[cryptography] # Untuk JWT
-uvicorn[standard]
-requests
-pydantic
-wikipedia
-html5lib # Diperlukan oleh wikipedia library
-beautifulsoup4 # Juga mungkin diperlukan oleh wikipedia library
-python-dotenv # Jika menggunakan .env
-asyncpg
-python-jose[cryptography]
+# File: requirements.txt (DIPERBAIKI)
+
+fastapi # Versi bisa ditambahkan jika perlu, misal >=0.100.0
+uvicorn[standard] # Untuk menjalankan server
+sqlalchemy[asyncio] # SQLAlchemy dengan dukungan asyncio
+asyncpg # <-- DRIVER ASYNC YANG DIPERLUKAN
+alembic
+python-multipart
+passlib[bcrypt]
+email-validator
+python-jose[cryptography] # Cukup satu baris
+fastapi-users[sqlalchemy] # Library user auth
+python-dotenv # Untuk .env lokal
+requests # Untuk OpenTDB
+wikipedia # Untuk Wikipedia
+html5lib # Dependensi Wikipedia
+beautifulsoup4 # Dependensi Wikipedia
+
