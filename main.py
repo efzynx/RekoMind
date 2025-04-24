@@ -49,24 +49,24 @@ app.include_router( api_router_v1, prefix="/api/v1") # /quiz, /history, /recomme
 
 # --- Sajikan Frontend Statis ---
 
-STATIC_DIR = "static" # Nama folder tempat index.html dan script.js
+STATIC_DIR = "public" # Nama folder tempat index.html dan script.js
 
-# 1. Mount direktori 'static' ke path '/static' untuk file js, css, img
-# Pastikan folder 'static' ada di root proyek sejajar dengan main.py
+# 1. Mount direktori 'public' ke path '/public' untuk file js, css, img
+# Pastikan folder 'public' ada di root proyek sejajar dengan main.py
 if not os.path.isdir(STATIC_DIR):
-    print(f"PERINGATAN: Direktori static '{STATIC_DIR}' tidak ditemukan.")
+    print(f"PERINGATAN: Direktori public '{STATIC_DIR}' tidak ditemukan.")
 else:
      # html=True BISA dihilangkan jika kita handle root secara manual
-     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+     app.mount("/public", StaticFiles(directory=STATIC_DIR), name="public")
 
 # 2. Sajikan index.html untuk root path ('/') <<< DIKEMBALIKAN
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def serve_frontend_entrypoint():
-    """Menyajikan file index.html utama dari folder static."""
+    """Menyajikan file index.html utama dari folder public."""
     index_path = os.path.join(STATIC_DIR, "index.html")
     if not os.path.exists(index_path):
-        # Jika index.html tidak ada di static, beri 404
-        raise HTTPException(status_code=404, detail="Frontend entry point (static/index.html) not found.")
+        # Jika index.html tidak ada di public, beri 404
+        raise HTTPException(status_code=404, detail="Frontend entry point (public/index.html) not found.")
     return FileResponse(index_path)
 # -----------------------------------------------------------
 
