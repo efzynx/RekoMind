@@ -1,19 +1,15 @@
-# File: requirements.txt (DIPERBAIKI)
-
-fastapi # Versi bisa ditambahkan jika perlu, misal >=0.100.0
-uvicorn[standard] # Untuk menjalankan server
-sqlalchemy[asyncio,postgresql_asyncpg]
-# sqlalchemy[asyncio] # SQLAlchemy dengan dukungan asyncio
-# asyncpg # <-- DRIVER ASYNC YANG DIPERLUKAN
+fastapi
+uvicorn[standard]
+sqlalchemy[asyncio]
+asyncpg
 alembic
 python-multipart
 passlib[bcrypt]
 email-validator
-python-jose[cryptography] # Cukup satu baris
-fastapi-users[sqlalchemy] # Library user auth
-python-dotenv # Untuk .env lokal
-requests # Untuk OpenTDB
-wikipedia # Untuk Wikipedia
-html5lib # Dependensi Wikipedia
-beautifulsoup4 # Dependensi Wikipedia
-
+python-jose[cryptography]
+fastapi-users[sqlalchemy]
+python-dotenv
+requests
+wikipedia
+html5lib
+beautifulsoup4
