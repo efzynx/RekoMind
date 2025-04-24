@@ -19,10 +19,16 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Salin seluruh kode aplikasi ke working directory
-COPY . .
+# Salin file alembic dan alembic.ini ke working directory
 COPY alembic alembic
 COPY alembic.ini alembic.ini
+
+#  Periksa apakah file alembic.ini ada di dalam image
+RUN echo "🗂 Alembic files in image:" && ls -R alembic
+
+
+# Salin seluruh kode aplikasi ke working directory
+COPY . .
 
 
 # Beri tahu Docker port mana yang akan diekspos oleh container saat runtime
