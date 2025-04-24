@@ -1,0 +1,43 @@
+# File: docker-compose.yml
+
+services:
+  db: # Nama service untuk database PostgreSQL
+    image: postgres:16 # Gunakan image resmi Postgres (pilih versi jika perlu)
+    container_name: rekomind_db # Nama container untuk database
+    environment:
+      # Ambil kredensial dari file .env
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ # Simpan data DB secara persisten
+    networks:
+      - quiznet # Hubungkan ke network internal
+    restart: unless-stopped
+    # Tidak perlu expose port 5432 ke host KECUALI Anda ingin akses DB dari luar Docker
+
+  backend: # Nama service untuk aplikasi FastAPI Anda
+    container_name: rekomind
+    build: . # Build image dari Dockerfile di direktori ini
+    ports:
+      - "8000:8000" # Map port 8000 host ke 8000 container
+    environment:
+      # Ambil URL database dan secret key dari file .env
+      # Perhatikan host=@db, merujuk ke service 'db' di atas
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      PORT: 8000 # Port internal yang didengarkan Uvicorn
+    volumes:
+      - .:/app # Mount kode lokal ke /app di container (agar --reload Uvicorn berfungsi)
+    depends_on:
+      - db # Pastikan service 'db' sudah siap sebelum 'backend' dimulai
+    networks:
+      - quiznet # Hubungkan ke network internal
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload # Bisa dihapus jika CMD di Dockerfile sudah benar
+
+networks:
+  quiznet: # Definisikan network internal
+    driver: bridge
+
+volumes:
+  postgres_data: # Definisikan volume bernama untuk data DB

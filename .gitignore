@@ -50,3 +50,4 @@ build/
 # Lainnya
 *.bak
 *.swp
+backup/

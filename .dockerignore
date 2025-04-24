@@ -1,0 +1,46 @@
+# File: .dockerignore
+
+# Virtual environment
+venv/
+.venv/
+*/venv/
+*/.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs and database files (jika ada)
+*.log
+*.db
+*.sqlite3
+
+# Env files (JANGAN masukkan credential ke image)
+.env
+*.env
+
+# Docker specific files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Alembic cache/temp
+alembic.ini # Mungkin ingin disertakan jika URL dibaca saat build? Tapi lebih aman set saat run.
+alembic/ # Folder migrasi perlu disalin, jadi jangan ignore ini
+
+# Node modules (jika ada sisa dari setup tailwind build)
+node_modules/
+
+# Lainnya
+*.tmp
+*.bak
+dist/ # Jika ada folder build frontend
