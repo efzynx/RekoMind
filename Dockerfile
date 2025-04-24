@@ -21,6 +21,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Salin seluruh kode aplikasi ke working directory
 COPY . .
+COPY alembic alembic
+COPY alembic.ini alembic.ini
+
 
 # Beri tahu Docker port mana yang akan diekspos oleh container saat runtime
 EXPOSE ${PORT}
