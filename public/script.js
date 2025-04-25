@@ -1,7 +1,7 @@
 // File: script.js (LENGKAP - Fix "Missing results UI elements" pada run ke-2)
 
 // --- Konfigurasi & State ---
-const API_BASE_URL = "https://rekomind.vercel.app/api/v1"; //vercel
+const API_BASE_URL = "/api/v1"; //vercel
 // const API_BASE_URL = "http://localhost:8000/api/v1"; //localhost
 
 let currentQuizSessionId = null; let questions = []; let currentQuestionIndex = 0; let userAnswers = [];
