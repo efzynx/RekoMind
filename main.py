@@ -47,6 +47,17 @@ app.include_router( fastapi_users.get_users_router(UserRead, UserUpdate), prefix
 app.include_router( api_router_v1, prefix="/api/v1") # /quiz, /history, /recommendations
 # -----------------------------------
 
+
+import os
+
+if os.getenv("ENV") != "production":
+    # Jalankan migrasi hanya di lokal/dev
+    from alembic.config import CommandLine
+    cli = CommandLine()
+    cli.run_cmd(["upgrade", "head"])
+
+
+
 # --- Sajikan Frontend Statis ---
 
 STATIC_DIR = "public" # Nama folder tempat index.html dan script.js
