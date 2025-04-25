@@ -28,7 +28,12 @@ except ImportError:
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://quiz_app_user:inipw@localhost:5432/quiz_db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+# DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://quiz_app_user:inipw@localhost:5432/quiz_db")
+if not DATABASE_URL:
+    # Jika tidak diset di environment (Vercel atau .env lokal), hentikan aplikasi
+    # dengan error yang jelas di log.
+    raise ValueError("FATAL ERROR: DATABASE_URL environment variable is not set!")
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
     """Model Database untuk User."""
