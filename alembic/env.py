@@ -1,4 +1,4 @@
-# File: alembic/env.py (Revisi Logika Pengambilan DB URL)
+# File: alembic/env.py (Revisi FINAL - Hanya Baca dari alembic.ini)
 
 import asyncio
 import os
@@ -7,6 +7,8 @@ from logging.config import fileConfig
 
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy import pool
+# Pastikan engine_from_config diimpor jika diperlukan untuk offline mode standar
+from sqlalchemy import engine_from_config
 
 from alembic import context
 
@@ -22,7 +24,6 @@ try:
     from models.base import Base
     import models.user_models
     import models.history_models
-    # import models.quiz_models
 except ImportError as e:
     print(f"GAGAL Impor: {e}")
     print("Pastikan Base dan file model lain bisa diimpor.")
@@ -37,20 +38,15 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-# --- LOGIKA PENGAMBILAN DB URL ---
-db_url = os.getenv("DATABASE_URL")
-
+# --- PENGAMBILAN DB URL HANYA DARI alembic.ini ---
+# Fungsi ini dijalankan oleh command line 'alembic', jadi kita gunakan
+# konfigurasi dari file .ini nya.
+db_url = config.get_main_option("sqlalchemy.url")
 if not db_url:
-    # Jika tidak ada di env var, baru coba ambil dari alembic.ini
-    print("DATABASE_URL environment variable not found, trying alembic.ini...")
-    db_url = config.get_main_option("sqlalchemy.url")
-    if not db_url:
-        raise ValueError("URL Database tidak diatur di alembic.ini (sqlalchemy.url) atau environment variable DATABASE_URL")
-else:
-    # Jika ada di env var, set juga ke config agar Alembic tahu (opsional tapi baik)
-    print(f"Using DATABASE_URL from environment variable: ...@{db_url.split('@')[-1]}") # Cetak bagian host/db saja
-    config.set_main_option("sqlalchemy.url", db_url)
-# -------------------------------------------
+    # Berhenti jika URL tidak diset di alembic.ini
+    raise ValueError("Nilai 'sqlalchemy.url' belum diatur di alembic.ini")
+# -----------------------------------------------
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
@@ -73,8 +69,8 @@ def do_run_migrations(connection):
 
 async def run_migrations_online() -> None:
     """Run migrations in 'online' mode using an async engine."""
-    # Gunakan db_url yang sudah ditentukan di atas
-    print(f"Menghubungkan ke database: ...@{db_url.split('@')[-1]}") # Cetak bagian host/db saja
+    # Gunakan db_url yang sudah dibaca dari alembic.ini
+    print(f"Menghubungkan ke database (dari alembic.ini): {db_url.split('@')[-1]}") # Sensor host
     connectable = create_async_engine(db_url, poolclass=pool.NullPool)
 
     try:
