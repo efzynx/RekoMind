@@ -28,7 +28,7 @@ except ImportError:
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://neondb_owner:npg_cyJWN21xrmXZ@ep-broad-lab-a10lr0rr.ap-southeast-1.aws.neon.tech/neondb?")
 # DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://quiz_app_user:inipw@localhost:5432/quiz_db")
 if not DATABASE_URL:
     # Jika tidak diset di environment (Vercel atau .env lokal), hentikan aplikasi
