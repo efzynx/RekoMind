@@ -48,11 +48,11 @@ app.include_router( api_router_v1, prefix="/api/v1") # /quiz, /history, /recomme
 # -----------------------------------
 
 
-if os.getenv("ENV") != "production":
-    # Jalankan migrasi hanya di lokal/dev
-    from alembic.config import CommandLine
-    cli = CommandLine()
-    cli.run_cmd(["upgrade", "head"])
+# if os.getenv("ENV") != "production":
+#     # Jalankan migrasi hanya di lokal/dev
+#     from alembic.config import CommandLine
+#     cli = CommandLine()
+#     cli.run_cmd(["upgrade", "head"])
 
 
 
