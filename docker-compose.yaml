@@ -50,23 +50,6 @@ services:
     networks:
       - quiznet # Harus ada di network yang sama dengan backend
   # --- AKHIR SERVICE NGROK ---
-
-     # --- SERVICE NGROK DITAMBAHKAN DI SINI ---
-  ngrok:
-    image: ngrok/ngrok:latest # Gunakan image resmi Ngrok
-    container_name: rekomind_ngrok # Nama container untuk Ngrok
-    restart: unless-stopped
-    depends_on:
-      - backend # Pastikan backend sudah (mencoba) start
-    environment:
-      # Baca Authtoken Ngrok Anda dari file .env
-      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
-    # Perintah untuk Ngrok: buat tunnel HTTP ke service 'backend' pada port 8000
-    command: http backend:8000
-    networks:
-      - quiznet # Harus ada di network yang sama dengan backend
-  # --- AKHIR SERVICE NGROK ---
-
 networks:
   quiznet: # Definisikan network internal
     driver: bridge
