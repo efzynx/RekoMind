@@ -8,8 +8,6 @@ services:
       - "5432:5432" # Map port 5432 host ke 5432 container
     # Jika Anda ingin mengakses DB dari luar Docker, uncomment baris di atas
     container_name: rekomind_db # Nama container untuk database
-    image: postgres:16 # Gunakan versi spesifik dan stabil
-    container_name: rekomind_db
     environment:
       # Ambil kredensial dari file .env
       POSTGRES_USER: ${POSTGRES_USER}
