@@ -1,98 +1,116 @@
-# File: utils/opentdb_api.py
+# File: utils/opentdb_api.py (PERBAIKAN FINAL untuk NameError)
 
 import requests
 import random
 from typing import List, Dict, Optional
-# Pastikan Anda punya file ini atau fungsi decode ada di tempat lain
-from utils.helpers import decode_html_entities
+import html
+import urllib.parse
 
 OPENTDB_BASE_URL = "https://opentdb.com/api.php"
-# Mapping ID Kategori OpenTDB ke Nama
 OPENTDB_CATEGORIES = {
-    9: "General Knowledge",
-    10: "Entertainment: Books",
-    11: "Entertainment: Film",
-    12: "Entertainment: Music",
-    13: "Entertainment: Musicals & Theatres",
-    14: "Entertainment: Television",
-    15: "Entertainment: Video Games",
-    16: "Entertainment: Board Games",
-    17: "Science & Nature",
-    18: "Science: Computers",
-    19: "Science: Mathematics",
-    20: "Mythology",
-    21: "Sports",
-    22: "Geography",
-    23: "History",
-    24: "Politics",
-    25: "Art",
-    26: "Celebrities",
-    27: "Animals",
-    28: "Vehicles",
-    29: "Entertainment: Comics",
-    30: "Science: Gadgets",
-    31: "Entertainment: Japanese Anime & Manga",
+    9: "General Knowledge", 10: "Entertainment: Books", 11: "Entertainment: Film",
+    12: "Entertainment: Music", 13: "Entertainment: Musicals & Theatres",
+    14: "Entertainment: Television", 15: "Entertainment: Video Games", 16: "Entertainment: Board Games",
+    17: "Science & Nature", 18: "Science: Computers", 19: "Science: Mathematics",
+    20: "Mythology", 21: "Sports", 22: "Geography", 23: "History", 24: "Politics",
+    25: "Art", 26: "Celebrities", 27: "Animals", 28: "Vehicles",
+    29: "Entertainment: Comics", 30: "Science: Gadgets", 31: "Entertainment: Japanese Anime & Manga",
     32: "Entertainment: Cartoon & Animations",
 }
 
+def decode_html_entities(text: str) -> str:
+    """Mendekode URL-encoded string dan HTML entities."""
+    if not text:
+        return ""
+    try:
+        decoded_url_text = urllib.parse.unquote(text)
+        decoded_html_text = html.unescape(decoded_url_text)
+        return decoded_html_text
+    except Exception as e:
+        print(f"Warning: Error decoding text '{text[:50]}...': {e}")
+        return text
+
 def fetch_questions(amount: int = 10, category_id: Optional[int] = None, difficulty: Optional[str] = None) -> List[Dict]:
     """Mengambil pertanyaan dari Open Trivia Database API."""
-    params = {"amount": amount, "type": "multiple", "encode": "url3986"} # Paksa tipe multiple choice & encoding URL
+    params = {"amount": amount, "type": "multiple", "encode": "url3986"}
     if category_id and category_id in OPENTDB_CATEGORIES:
         params["category"] = category_id
     if difficulty and difficulty in ["easy", "medium", "hard"]:
         params["difficulty"] = difficulty
 
-    print(f"Fetching from OpenTDB with params: {params}") # Logging
+    print(f"--- OpenTDB API Call ---")
+    print(f"Requesting URL: {OPENTDB_BASE_URL}")
+    print(f"With Params: {params}")
 
     try:
-        response = requests.get(OPENTDB_BASE_URL, params=params, timeout=15) # Tambah timeout
-        response.raise_for_status() # Raise exception untuk bad status codes (4xx atau 5xx)
+        response = requests.get(OPENTDB_BASE_URL, params=params, timeout=25)
+        response.raise_for_status()
         data = response.json()
+        print(f"Raw JSON Response from OpenTDB: {data}")
 
-        # Cek response code dari API
         if data.get("response_code") != 0:
             print(f"API Error from OpenTDB: Code {data.get('response_code')}. Params: {params}")
-            return [] # Kembalikan list kosong jika ada error dari API
+            return []
 
         processed_questions = []
-        # Buat ID unik dasar untuk batch ini (akan disempurnakan di service)
-        batch_prefix = f"q_{random.randint(1000,9999)}"
+        batch_prefix = f"q_otdb_{random.randint(1000,9999)}"
 
-        # Loop melalui hasil dari API
         for idx, item in enumerate(data.get("results", [])):
-            # Validasi dasar data soal
-            if not all(k in item for k in ('category', 'difficulty', 'question', 'correct_answer', 'incorrect_answers')):
-                 print(f"Warning: Skipping incomplete question data: {item}")
-                 continue
+            print(f"\n--- Processing Question {idx+1} ---")
+            print(f"Raw Item: {item}")
 
-            # --- PERBAIKAN UTAMA DI SINI ---
-            # 1. Ambil NAMA Kategori Langsung dari API dan decode
+            if not all(k in item for k in ('question', 'correct_answer', 'incorrect_answers')) or \
+               not isinstance(item.get("incorrect_answers"), list):
+                 print(f"WARNING: Skipping incomplete or malformed question data: {item}")
+                 continue
+            
+            question_text = decode_html_entities(str(item.get("question", "")))
+            
+            # --- PASTIKAN DEFINISI INI ADA DAN BENAR SEBELUM DIPAKAI ---
+            correct_answer_text = decode_html_entities(str(item.get("correct_answer", "")))
+            # ----------------------------------------------------------
+
+            incorrect_answers_list_raw = item.get("incorrect_answers", [])
+            decoded_incorrect_answers = [decode_html_entities(str(ans)) for ans in incorrect_answers_list_raw]
+            
             category_name_raw = item.get("category", "Unknown Category")
             decoded_category_name = decode_html_entities(str(category_name_raw))
+            decoded_difficulty = decode_html_entities(str(item.get("difficulty", "unknown")))
 
-            # 2. Decode opsi dan jawaban benar
-            options_raw = item.get("incorrect_answers", []) + [item.get("correct_answer", "")]
-            decoded_options = [decode_html_entities(str(opt)) for opt in options_raw]
-            decoded_correct_answer = decode_html_entities(str(item.get("correct_answer")))
+            print(f"  Decoded Question: {question_text}")
+            print(f"  Decoded Correct Answer: {correct_answer_text}") # Menggunakan variabel yang sudah pasti ada
+            print(f"  Decoded Incorrect Answers: {decoded_incorrect_answers}")
 
-            # Acak urutan pilihan jawaban
-            random.shuffle(decoded_options)
+            if not correct_answer_text:
+                print(f"WARNING: Skipping question due to empty correct_answer: {item}")
+                continue
 
-            # Susun dictionary soal yang sudah diproses
+            options = []
+            options.extend(decoded_incorrect_answers)
+            options.append(correct_answer_text) # <<< GUNAKAN correct_answer_text
+            
+            options = [opt for opt in options if opt and str(opt).strip()] 
+
+            print(f"  Options before shuffle (len: {len(options)}): {options}")
+            
+            if len(set(options)) < 2:
+                print(f"WARNING: Not enough unique options ({len(set(options))}) for question '{question_text}'. Skipping.")
+                continue
+            
+            random.shuffle(options)
+            print(f"  Options after shuffle: {options}")
+
             processed_question = {
-                # Buat ID awal yang unik dalam batch ini
                 "id": f"{batch_prefix}_{idx}",
-                # TIDAK menyertakan 'category_id' karena API tidak memberikannya di sini
-                "category_name": decoded_category_name, # Gunakan nama yang sudah didecode
-                "difficulty": item.get("difficulty", "unknown"),
-                "question": decode_html_entities(str(item.get("question", ""))), # Decode pertanyaan
-                "options": decoded_options, # Gunakan opsi yang sudah didecode dan diacak
-                "correct_answer": decoded_correct_answer, # Gunakan jawaban yang sudah didecode
+                "category_name": decoded_category_name,
+                "difficulty": decoded_difficulty,
+                "question": question_text,
+                "options": options,
+                "correct_answer": correct_answer_text, # Jawaban benar yang sudah didecode
             }
             processed_questions.append(processed_question)
-            # --- AKHIR PERBAIKAN ---
 
+        print(f"--- End OpenTDB API Call ---")
         print(f"Successfully fetched and processed {len(processed_questions)} questions.")
         return processed_questions
 
@@ -103,8 +121,7 @@ def fetch_questions(amount: int = 10, category_id: Optional[int] = None, difficu
         print(f"Error fetching questions from OpenTDB: {e}. Params: {params}")
         return []
     except Exception as e:
-        # Tangkap error spesifik jika memungkinkan, atau log traceback untuk debug
         import traceback
-        print(f"An unexpected error occurred during question processing: {e}")
-        print(traceback.format_exc()) # Cetak traceback untuk detail error
+        print(f"An unexpected error occurred in fetch_questions: {e}")
+        print(traceback.format_exc())
         return []

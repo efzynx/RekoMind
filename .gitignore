@@ -42,6 +42,7 @@ node_modules/
 dist/
 build/
 *.egg-info/
+py.bak
 
 # Docker (tergantung kebutuhan, jika image tidak di-push ke registry publik)
 # docker-compose.yml # Mungkin ingin disimpan
