@@ -4,6 +4,10 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles # <-- Impor lagi
 from fastapi.responses import HTMLResponse, FileResponse # <-- Impor lagi
+from contextlib import asynccontextmanager # Untuk lifespan event
+# ... (Impor lain tetap sama) ...
+from utils.ai_models import ensure_ai_model_loaded
+
 import os
 from dotenv import load_dotenv
 
@@ -14,6 +18,28 @@ from api.v1.api import api_router as api_router_v1
 from auth.core import fastapi_users
 from auth.strategy import auth_backend_jwt
 from models.user_models import User, UserRead, UserCreate, UserUpdate, uuid
+
+# --- Lifespan Event untuk Startup & Shutdown ---
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Aplikasi FastAPI memulai...")
+    print("Memastikan model AI (Sentence Transformer) dimuat...")
+    try:
+        ensure_ai_model_loaded() # Panggil fungsi ini untuk memuat model saja
+        print("Model AI siap.")
+    except Exception as e:
+        print(f"ERROR saat memuat model AI: {e}")
+        import traceback
+        traceback.print_exc()
+    yield
+    print("Aplikasi FastAPI berhenti...")
+
+app = FastAPI(
+    title="Interactive Quiz API with AI Recommender",
+    description="API Kuis dengan Rekomendasi AI.",
+    version="0.5.0",
+    lifespan=lifespan # Tambahkan lifespan event handler
+)
 
 load_dotenv()
 app = FastAPI(
