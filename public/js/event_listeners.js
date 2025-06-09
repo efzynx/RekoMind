@@ -4,6 +4,7 @@ import * as quiz from './quiz_api.js';
 import * as ui from './ui_handlers.js';
 import * as history from './history_api.js';
 import { state } from './state.js';
+import { updateState } from './state.js';
 
 export function setupEventListeners() {
     console.log("Attaching event listeners...");
