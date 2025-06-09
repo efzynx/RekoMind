@@ -8,7 +8,7 @@ load_dotenv()
 
 # Ambil URL Ngrok dari environment variable atau hardcode untuk tes
 # Pastikan ini adalah BASE URL Ngrok Anda, tanpa path endpoint di sini.
-COLAB_NGROK_BASE_URL = os.getenv("COLAB_NGROK_URL", "https://8304-34-83-82-37.ngrok-free.app") 
+COLAB_NGROK_BASE_URL = os.getenv("COLAB_NGROK_URL", "https://1902-34-21-21-233.ngrok-free.app") 
 COLAB_API_ENDPOINT_PATH = "/generate_recommendations_v2" # Path endpoint di Colab
 
 if COLAB_NGROK_BASE_URL == "GANTI_DENGAN_URL_NGROK_COLAB_ANDA":
