@@ -1,61 +1,67 @@
-# File: docker-compose.yml (FINAL dengan Ngrok)
-# Hapus baris 'version:' jika ada di file Anda
 
 services:
-  db: # Nama service untuk database PostgreSQL
-    image: postgres:16 # Gunakan image resmi Postgres (pilih versi jika perlu)
+  db: 
+    image: postgres:16 
     ports:
-      - "5432:5432" # Map port 5432 host ke 5432 container
-    # Jika Anda ingin mengakses DB dari luar Docker, uncomment baris di atas
-    container_name: rekomind_db # Nama container untuk database
+      - "5432:5432" 
+    container_name: rekomind_db
     environment:
-      # Ambil kredensial dari file .env
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - postgres_data:/var/lib/postgresql/data/ # Simpan data DB secara persisten
+      - postgres_data:/var/lib/postgresql/data/ 
     networks:
-      - quiznet # Hubungkan ke network internal
+      - quiznet 
     restart: unless-stopped
-    # Tidak perlu mapping 'ports:' untuk DB jika hanya diakses backend
 
-  backend: # Nama service untuk aplikasi FastAPI Anda
-    container_name: rekomind # Nama container backend
-    build: . # Build image dari Dockerfile di direktori ini
+  backend: 
+    container_name: rekomind 
+    build: . 
     ports:
-      - "8000:8000" # Map port 8000 host ke 8000 container (biarkan ini agar bisa tes lokal langsung)
+      - "8000:8000" 
     environment:
-      # Ambil URL database dan secret key dari file .env
-      DATABASE_URL: ${DATABASE_URL} # Pastikan ini menunjuk ke host 'db'
+      DATABASE_URL: ${DATABASE_URL} 
       SECRET_KEY: ${SECRET_KEY}
-      PORT: 8000 # Port internal yang didengarkan Uvicorn
+      PORT: 8000 
     volumes:
-      - .:/app # Mount kode lokal ke /app di container (untuk --reload)
+      - .:/app 
     depends_on:
-      - db # Pastikan service 'db' sudah siap sebelum 'backend' dimulai
+      - db 
     networks:
-      - quiznet # Hubungkan ke network internal
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload # Jalankan dengan reload
+      - quiznet 
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload 
 
-  # --- SERVICE NGROK DITAMBAHKAN DI SINI ---
-  ngrok:
-    image: ngrok/ngrok:latest # Gunakan image resmi Ngrok
-    container_name: rekomind_ngrok # Nama container untuk Ngrok
+  #  --- Ngrok Setup ---
+  # ngrok:
+  #   image: ngrok/ngrok:latest 
+  #   container_name: rekomind_ngrok 
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - backend 
+  #   environment:
+  #     NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+  #   command: http backend:8000
+  #   networks:
+  #     - quiznet
+  
+
+# --- Cloudflare tunnel setup ---
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: rekomindTunnel
     restart: unless-stopped
     depends_on:
-      - backend # Pastikan backend sudah (mencoba) start
+      - backend
+    command: tunnel --no-autoupdate run --token ${CF_TUNNEL_TOKEN}
     environment:
-      # Baca Authtoken Ngrok Anda dari file .env
-      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
-    # Perintah untuk Ngrok: buat tunnel HTTP ke service 'backend' pada port 8000
-    command: http backend:8000
+      TUNNEL_TOKEN: ${CF_TUNNEL_TOKEN}
     networks:
-      - quiznet # Harus ada di network yang sama dengan backend
-  # --- AKHIR SERVICE NGROK ---
+      - quiznet
+
 networks:
-  quiznet: # Definisikan network internal
+  quiznet: 
     driver: bridge
 
 volumes:
-  postgres_data: # Definisikan volume bernama untuk data DB
+  postgres_data: 

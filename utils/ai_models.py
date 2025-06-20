@@ -8,11 +8,11 @@ load_dotenv()
 
 # Ambil URL Ngrok dari environment variable atau hardcode untuk tes
 # Pastikan ini adalah BASE URL Ngrok Anda, tanpa path endpoint di sini.
-COLAB_NGROK_BASE_URL = os.getenv("COLAB_NGROK_URL", "https://1902-34-21-21-233.ngrok-free.app") 
+COLAB_API_BASE_URL = os.getenv("COLAB_API_URL", "https://cec8-35-221-22-106.ngrok-free.app") 
 COLAB_API_ENDPOINT_PATH = "/generate_recommendations_v2" # Path endpoint di Colab
 
-if COLAB_NGROK_BASE_URL == "GANTI_DENGAN_URL_NGROK_COLAB_ANDA":
-    print("PERINGATAN LOKAL AI: COLAB_NGROK_URL tidak diset di .env atau kode. Gunakan URL Ngrok yang valid.")
+if COLAB_API_BASE_URL == "GANTI_DENGAN_URL_NGROK_COLAB_ANDA":
+    print("PERINGATAN LOKAL AI: COLAB_API_URL tidak diset di .env atau kode. Gunakan URL Ngrok yang valid.")
 
 def get_dynamic_content_recommendations(
     query_text_for_embedding: str, 
@@ -23,11 +23,11 @@ def get_dynamic_content_recommendations(
     Mengambil rekomendasi dari API yang berjalan di Colab.
     Menerima query untuk embedding dan keyword untuk pencarian Wikipedia.
     """
-    if not COLAB_NGROK_BASE_URL or COLAB_NGROK_BASE_URL == "GANTI_DENGAN_URL_NGROK_COLAB_ANDA":
+    if not COLAB_API_BASE_URL or COLAB_API_BASE_URL == "GANTI_DENGAN_URL_NGROK_COLAB_ANDA":
         print("LOKAL AI: URL Ngrok Colab tidak valid. Tidak bisa mengirim request.")
         return [{"title": "Error Konfigurasi AI (Lokal)", "summary": "URL server AI tidak valid.", "url": "#", "source": "System"}]
 
-    full_colab_api_url = f"{COLAB_NGROK_BASE_URL.rstrip('/')}{COLAB_API_ENDPOINT_PATH}"
+    full_colab_api_url = f"{COLAB_API_BASE_URL.rstrip('/')}{COLAB_API_ENDPOINT_PATH}"
     
     print(f"LOKAL AI: Mengirim request ke API Colab: {full_colab_api_url}")
     print(f"  LOKAL AI: Payload -> Search Keyword: '{search_keyword_for_wikipedia}', Embedding Context: '{query_text_for_embedding[:70]}...'")
@@ -68,6 +68,6 @@ def get_dynamic_content_recommendations(
 def ensure_ai_model_loaded():
     """Hanya untuk menandakan modul bisa diimpor dan mengecek konfigurasi URL."""
     print("LOKAL AI: Modul pemanggil API Colab siap.")
-    if not COLAB_NGROK_BASE_URL or COLAB_NGROK_BASE_URL == "GANTI_DENGAN_URL_NGROK_COLAB_ANDA":
+    if not COLAB_API_BASE_URL or COLAB_API_BASE_URL == "GANTI_DENGAN_URL_NGROK_COLAB_ANDA":
         print("LOKAL AI: PERINGATAN! URL Ngrok untuk Colab belum dikonfigurasi dengan benar di .env atau kode utils/ai_models.py.")
     pass

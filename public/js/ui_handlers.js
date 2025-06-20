@@ -89,6 +89,12 @@ export function updateAuthUI() {
         elements.userGreetingSpan.textContent = `Hi, ${displayName(state.currentUserName)}`;
         elements.userGreetingSpan.title = `Hi, ${displayName(state.currentUserName)}`;
         elements.showHistoryBtn.classList.remove('hidden');
+        if (state.isSuperuser) {
+            elements.downloadHistoryBtn.classList.remove('hidden');
+            console.log("UI: Menampilkan tombol admin.");
+        } else {
+            elements.downloadHistoryBtn.classList.add('hidden');
+        }
     } else {
         elements.loggedOutView.classList.remove('hidden');
         elements.loggedInView.classList.add('hidden');
@@ -98,6 +104,7 @@ export function updateAuthUI() {
         elements.userGreetingSpan.title = '';
         if(elements.historySection) elements.historySection.classList.add('hidden');
         elements.showHistoryBtn.classList.add('hidden');
+        elements.downloadHistoryBtn.classList.add('hidden');
     }
     
     if(state.isLoggedIn){
@@ -116,4 +123,26 @@ export function togglePasswordVisibility(inputId, buttonElement) {
     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
     passwordInput.setAttribute('type', type);
     spanElement.textContent = type === 'password' ? 'Lihat' : 'Sembunyi';
+}
+
+export function displayDeepAnalysisUI(analysisData) {
+    if (!elements.deepAnalysisResults) return;
+    elements.deepAnalysisResults.classList.remove('hidden');
+    elements.deepAnalysisResults.innerHTML = ''; // Kosongkan dulu
+
+    let content = `<h4 class="text-lg font-semibold text-indigo-800 mb-2">Hasil Analisis Mendalam</h4>`;
+    content += `<p class="text-gray-700 italic mb-4">${analysisData.summary_text}</p>`;
+
+    if (analysisData.weakest_concepts && analysisData.weakest_concepts.length > 0) {
+        console.warn('displayDeepAnalysisUI: data kosong atau tidak valid:', analysisData);
+        content += `<p class="font-semibold text-gray-800 mb-1">Topik Kelemahan:</p>`;
+        content += `<ul class="list-disc list-inside space-y-1">`;
+        analysisData.weakest_concepts.forEach(concept => {
+            content += `<li class="text-sm text-red-700">${concept.topic} (Tingkat Kesalahan: ${concept.error_rate}%)</li>`;
+            console.warn("Data analisis tidak valid:", analysisData);
+        });
+        content += `</ul>`;
+    }
+
+    elements.deepAnalysisResults.innerHTML = content;
 }

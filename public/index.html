@@ -84,6 +84,12 @@
                         <img src="public/assets/time-past.svg" alt="Riwayat" class="h-5 w-5">
                         <span class="sr-only">Riwayat</span>
                     </button>
+                        <!-- === TOMBOL BARU UNTUK ADMIN === -->
+                    <button id="download-history-btn" class="p-2 bg-cyan-500 text-white rounded-full shadow-sm transition duration-150 hover:bg-cyan-600 hidden" title="Unduh Riwayat Jawaban (CSV)">
+                        <img src="public/assets/unduh.png" alt="Unduh CSV" class="h-5 w-5">
+                        <span class="sr-only">Unduh Riwayat</span>
+                    </button>
+                         <!-- ================================= -->
                     <button id="logout-btn" class="p-2 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-sm transition duration-150" title="Logout">
                         <img src="public/assets/leave.svg" alt="Logout" class="h-5 w-5">
                         <span class="sr-only">Logout</span>
@@ -129,11 +135,36 @@
                  <button id="cancel-register-btn" class="w-full mt-3 text-sm text-center text-gray-500 hover:text-green-600 hover:underline">Batal</button>
             </section>
 
-            <section id="history-section" class="hidden mb-6 p-6 bg-white rounded-lg shadow-md">
+            <!-- <section id="history-section" class="hidden mb-6 p-6 bg-white rounded-lg shadow-md">
                  <div class="flex justify-between items-center mb-4"> <h2 class="text-xl font-bold text-gray-700">Riwayat Kuis Anda</h2> <button id="close-history-btn" class="text-sm bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-300 transition duration-150">&times; Tutup</button> </div>
                  <div id="history-list" class="space-y-3 max-h-96 overflow-y-auto border border-gray-200 rounded-lg p-4 custom-scrollbar bg-gray-50">
                      <p class="text-gray-500 p-4 text-center italic">Memuat riwayat...</p>
                  </div>
+            </section> -->
+            <section id="history-section" class="hidden mb-6 p-6 bg-white rounded-lg shadow-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-700">Riwayat Kuis Anda</h2>
+                    <button id="close-history-btn" class="text-sm bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-300 transition duration-150">&times; Tutup</button>
+                </div>
+                
+                <!-- === AREA BARU UNTUK ANALISIS MENDALAM === -->
+                <div id="deep-analysis-controls" class="mb-4 text-center">
+                    <button id="run-deep-analysis-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition-all duration-150 transform hover:scale-105">
+                        Cek Analisis Kelemahan Mendalam
+                    </button>
+                    <div id="deep-analysis-loading" class="hidden mt-2 text-sm text-indigo-600">
+                        Menganalisis riwayat Anda...
+                    </div>
+                </div>
+
+                <div id="deep-analysis-results" class="hidden mb-6 p-4 border-2 border-dashed border-indigo-200 rounded-lg bg-indigo-50">
+                    <!-- Hasil analisis akan ditampilkan di sini -->
+                </div>
+                <!-- ======================================= -->
+
+                <div id="history-list" class="space-y-3 max-h-80 overflow-y-auto border border-gray-200 rounded-lg p-4 custom-scrollbar bg-gray-50">
+                    <p class="text-gray-500 p-4 text-center italic">Memuat riwayat...</p>
+                </div>
             </section>
 
             <section id="quiz-setup" class="p-6 bg-white rounded-lg shadow-md">

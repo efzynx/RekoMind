@@ -190,9 +190,17 @@ export async function fetchUserInfo() {
         updateState({
             currentUserEmail: userData.email,
             currentUserName: userData.name, // user info name
-            isLoggedIn: true
+            isLoggedIn: true,
+            isSuperuser: userData.is_superuser,
+            currentUserRole: userData.role || 'user'
         });
         console.log("User info OK:", userData);
+        if (userData.is_superuser && elements.downloadHistoryBtn) {
+            elements.downloadHistoryBtn.classList.remove('hidden');
+            console.log("ROLE USER:", userData.role);
+            console.log("TOMBOL ELEM:", elements.downloadHistoryBtn);
+
+        }
     } catch (error) { 
         console.error("Fetch User Info Err:", error.message); 
         handleLogout();

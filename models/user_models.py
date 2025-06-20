@@ -9,6 +9,7 @@ from typing import List, Optional, AsyncGenerator # Pastikan AsyncGenerator ada
 import uuid
 import os
 from dotenv import load_dotenv
+from fastapi_users import schemas
 
 # Impor Base dari file base.py
 try:
@@ -89,6 +90,7 @@ class UserRead(schemas.BaseUser[uuid.UUID]):
     education_level: Optional[str] = None
     institution_name: Optional[str] = None
     favorite_subjects: Optional[str] = None
+    is_superuser: bool = False 
     model_config = ConfigDict(from_attributes=True)
 
 class UserCreate(schemas.BaseUserCreate):

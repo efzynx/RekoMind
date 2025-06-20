@@ -7,6 +7,8 @@ import * as quiz from './js/quiz_api.js';
 import * as recommendation from './js/recommendation_api.js';
 import * as history from './js/history_api.js';
 import { setupEventListeners } from './js/event_listeners.js';
+import * as admin from './js/admin_api.js';
+
 
 document.addEventListener('DOMContentLoaded', () => {
   initializeState();

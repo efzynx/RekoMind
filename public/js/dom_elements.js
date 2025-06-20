@@ -18,6 +18,7 @@ export const elements = {
   logoutBtn: null,
   showHistoryBtn: null,
   closeHistoryBtn: null,
+  downloadHistoryBtn: null,
   
   // Forms
   loginFormSection: null,
@@ -75,7 +76,12 @@ export const elements = {
   
   // Password toggle buttons
   toggleLoginPasswordBtn: null,
-  toggleRegisterPasswordBtn: null
+  toggleRegisterPasswordBtn: null,
+
+  // analysis
+  runDeepAnalysisBtn: null,
+  deepAnalysisLoading: null,
+  deepAnalysisResults: null
 };
 
 
@@ -100,6 +106,7 @@ export function initializeDomElements() {
   elements.logoutBtn = document.getElementById('logout-btn');
   elements.showHistoryBtn = document.getElementById('show-history-btn');
   elements.closeHistoryBtn = document.getElementById('close-history-btn');
+  elements.downloadHistoryBtn = document.getElementById('download-history-btn');
   
   // Forms
   elements.loginFormSection = document.getElementById('login-form-section');
@@ -158,6 +165,11 @@ export function initializeDomElements() {
   // Password toggle buttons
   elements.toggleLoginPasswordBtn = document.getElementById('toggle-login-password');
   elements.toggleRegisterPasswordBtn = document.getElementById('toggle-register-password');
+
+  // analysis elements
+  elements.runDeepAnalysisBtn = document.getElementById('run-deep-analysis-btn');
+  elements.deepAnalysisLoading = document.getElementById('deep-analysis-loading');
+  elements.deepAnalysisResults = document.getElementById('deep-analysis-results')
 }
 
 console.log('loggedOutView:', elements.loggedOutView);

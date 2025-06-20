@@ -5,9 +5,30 @@ import * as ui from './ui_handlers.js';
 import * as history from './history_api.js';
 import { state } from './state.js';
 import { updateState } from './state.js';
+import { API_BASE_URL } from './config.js';
+import * as adminAPI from './admin_api.js';
+import * as analysisAPI from './analysis_api.js';
+
+
+
+async function handleDeepAnalysisClick() {
+    if (elements.deepAnalysisLoading) elements.deepAnalysisLoading.classList.remove('hidden');
+    if (elements.deepAnalysisResults) elements.deepAnalysisResults.innerHTML = ''; // Kosongkan hasil lama
+    try {
+        const analysisResult = await analysisAPI.fetchDeepAnalysisAPI();
+        ui.displayDeepAnalysisUI(analysisResult);
+    } catch (error) {
+        console.error("Event: Gagal mengambil analisis mendalam", error);
+        if (elements.deepAnalysisResults) elements.deepAnalysisResults.innerHTML = `<p class="text-red-500">Gagal memuat analisis: ${error.message}</p>`;
+    } finally {
+        if (elements.deepAnalysisLoading) elements.deepAnalysisLoading.classList.add('hidden');
+    }
+}
 
 export function setupEventListeners() {
     console.log("Attaching event listeners...");
+
+    elements.runDeepAnalysisBtn?.addEventListener('click', handleDeepAnalysisClick);
     
     // Navigation
     elements.showLoginBtn?.addEventListener('click', () => { 
@@ -26,6 +47,7 @@ export function setupEventListeners() {
         if(elements.loginErrorDiv) elements.loginErrorDiv.textContent = ''; 
     });
     
+    
     elements.cancelRegisterBtn?.addEventListener('click', () => { 
         ui.showView('setup'); 
         elements.registerForm?.reset(); 
@@ -37,6 +59,19 @@ export function setupEventListeners() {
     elements.loginForm?.addEventListener('submit', auth.handleLogin); 
     elements.registerForm?.addEventListener('submit', auth.handleRegister); 
     elements.logoutBtn?.addEventListener('click', auth.handleLogout);
+    elements.downloadHistoryBtn?.addEventListener('click', async () => {
+    ui.showLoading();
+    try {
+        const result = await adminAPI.downloadHistoryAPI();
+        alert(result.message);
+    } catch (error) {
+        console.error("Gagal mengunduh riwayat:", error);
+        alert(`Gagal: ${error.message}`);
+    } finally {
+        ui.hideLoading();
+    }
+});
+
     
     // History
     elements.showHistoryBtn?.addEventListener('click', history.fetchAndDisplayHistory); 
@@ -173,6 +208,19 @@ export function setupEventListeners() {
             quiz.nextQuestion(); 
         } 
     });
+
+    elements.showHistoryBtn?.addEventListener('click', async () => {
+    ui.showView('history');
+    await history.fetchAndDisplayHistory();
+    try {
+        const analysis = await analysisAPI.fetchDeepAnalysisAPI();
+        ui.displayDeepAnalysisUI(analysis);
+    } catch (error) {
+        console.error("Gagal mengambil analisis:", error);
+        if (elements.deepAnalysisResults)
+            elements.deepAnalysisResults.innerHTML = `<p class="text-red-500 italic">Gagal memuat analisis: ${error.message}</p>`;
+    }
+});
     
     // Reset quiz button
     elements.resetButton?.addEventListener('click', quiz.resetQuiz);
