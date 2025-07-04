@@ -1,73 +1,84 @@
-# File: utils/ai_models.py (LOKAL - Memanggil API Colab)
-import requests
+# File: utils/ai_models.py
+
+import httpx
 from typing import List, Dict, Optional
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Ambil URL Ngrok dari environment variable atau hardcode untuk tes
-# Pastikan ini adalah BASE URL Ngrok Anda, tanpa path endpoint di sini.
-COLAB_API_BASE_URL = os.getenv("COLAB_API_URL", "https://cec8-35-221-22-106.ngrok-free.app") 
-COLAB_API_ENDPOINT_PATH = "/generate_recommendations_v2" # Path endpoint di Colab
+# Ambil URL Ngrok dari environment variable
+COLAB_API_BASE_URL = os.getenv("COLAB_API_URL", "https://e7c1-35-227-20-103.ngrok-free.app")
+COLAB_API_ENDPOINT_PATH = "/generate_recommendations_v2"
 
-if COLAB_API_BASE_URL == "GANTI_DENGAN_URL_NGROK_COLAB_ANDA":
-    print("PERINGATAN LOKAL AI: COLAB_API_URL tidak diset di .env atau kode. Gunakan URL Ngrok yang valid.")
+# --- Model 1: Rekomendasi ---
 
-def get_dynamic_content_recommendations(
-    query_text_for_embedding: str, 
-    search_keyword_for_wikipedia: str, 
-    top_n: int = 1 # Sesuaikan default top_n jika perlu
+async def get_dynamic_content_recommendations(
+    query_text_for_embedding: str,
+    search_keyword_for_wikipedia: str,
+    top_n: int = 1
 ) -> List[Dict]:
-    """
-    Mengambil rekomendasi dari API yang berjalan di Colab.
-    Menerima query untuk embedding dan keyword untuk pencarian Wikipedia.
-    """
-    if not COLAB_API_BASE_URL or COLAB_API_BASE_URL == "GANTI_DENGAN_URL_NGROK_COLAB_ANDA":
-        print("LOKAL AI: URL Ngrok Colab tidak valid. Tidak bisa mengirim request.")
-        return [{"title": "Error Konfigurasi AI (Lokal)", "summary": "URL server AI tidak valid.", "url": "#", "source": "System"}]
-
-    full_colab_api_url = f"{COLAB_API_BASE_URL.rstrip('/')}{COLAB_API_ENDPOINT_PATH}"
-    
-    print(f"LOKAL AI: Mengirim request ke API Colab: {full_colab_api_url}")
-    print(f"  LOKAL AI: Payload -> Search Keyword: '{search_keyword_for_wikipedia}', Embedding Context: '{query_text_for_embedding[:70]}...'")
-    
     payload = {
         "query_text_for_embedding": query_text_for_embedding,
         "search_keyword_for_wikipedia": search_keyword_for_wikipedia,
         "top_n": top_n
     }
     try:
-        response = requests.post(full_colab_api_url, json=payload, timeout=45) 
-        response.raise_for_status() # Akan raise HTTPError untuk status 4xx/5xx
-        recommendations = response.json()
-        print(f"LOKAL AI: Menerima {len(recommendations)} rekomendasi dari Colab.")
-        return recommendations
-    except requests.exceptions.Timeout:
-        print(f"LOKAL AI: Timeout saat menghubungi API Colab di {full_colab_api_url}.")
-        return [{"title": "Error Rekomendasi", "summary": "Gagal menghubungi server AI (timeout).", "url": "#", "source": "System"}]
-    except requests.exceptions.HTTPError as http_err:
-        print(f"LOKAL AI: HTTP error saat menghubungi API Colab di {full_colab_api_url}: {http_err}")
-        print(f"LOKAL AI: Response content dari Colab: {response.text}")
-        error_summary = f"Server AI mengembalikan error: {response.status_code}."
-        try:
-            error_detail = response.json().get("error", {}).get("details", response.text)
-            error_summary += f" Detail: {error_detail}"
-        except:
-            error_summary += f" Detail: {response.text}"
-        return [{"title": "Error Rekomendasi", "summary": error_summary, "url": "#", "source": "System"}]
-    except requests.exceptions.RequestException as e:
-        print(f"LOKAL AI: Error request ke API Colab di {full_colab_api_url}: {e}")
-        return [{"title": "Error Rekomendasi", "summary": f"Gagal menghubungi server AI: {e}", "url": "#", "source": "System"}]
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            response = await client.post(
+                f"{COLAB_API_BASE_URL.rstrip('/')}{COLAB_API_ENDPOINT_PATH}",
+                json=payload
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        print(f"Error HTTP: {e}")
+        return [{"title": "Error", "summary": f"HTTP error: {e}", "url": "#"}]
     except Exception as e:
-        print(f"LOKAL AI: Error tidak terduga saat proses rekomendasi via Colab: {e}")
-        import traceback
-        traceback.print_exc()
-        return [{"title": "Error Rekomendasi", "summary": "Terjadi kesalahan internal sistem rekomendasi.", "url": "#", "source": "System"}]
+        print(f"Unknown error: {e}")
+        return [{"title": "Error", "summary": f"Unknown error: {e}", "url": "#"}]
+
+
+# --- Model 2: Analisis Hybrid ---
+
+async def get_holistic_hybrid_analysis_from_colab(performance_data: List[Dict]) -> Dict:
+    """
+    Mengirim DATA PERFORMA yang sudah diproses dari lokal ke layanan AI di Colab
+    untuk mendapatkan analisis hybrid (SVM + LLM).
+    """
+    if not COLAB_API_BASE_URL:
+        return {"error": "URL Layanan AI Colab (COLAB_API_URL) belum di-set."}
+
+    # Endpoint yang benar untuk analisis hybrid di Colab
+    endpoint_path = "/holistic_hybrid_analysis"
+    full_colab_api_url = f"{COLAB_API_BASE_URL.rstrip('/')}{endpoint_path}"
+
+    # Payload sekarang berisi 'performance_data', bukan 'user_id'
+    payload = {"performance_data": performance_data}
+    headers = {
+    "x-kong-request-id": f"req-{os.urandom(4).hex()}",
+    "Authorization": f"Bearer {os.getenv('MISTRAL_API_KEY')}",
+    "Content-Type": "application/json"
+}
+
+
+    async with httpx.AsyncClient(timeout=90.0) as client:
+        try:
+            print(f"LOKAL AI (Model 2): Mengirim data performa ke {full_colab_api_url}")
+            response = await client.post(full_colab_api_url, json=payload, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except httpx.RequestError as e:
+            print(f"LOKAL AI (Model 2): Error request ke Colab: {e}")
+            return {"error": f"Gagal menghubungi server AI: {e}"}
+        except httpx.HTTPStatusError as e:
+            print(f"LOKAL AI (Model 2): Colab mengembalikan error: {e.response.status_code} - {e.response.text}")
+            return {"error": f"Layanan AI mengembalikan error: {e.response.status_code}"}
+
 
 def ensure_ai_model_loaded():
-    """Hanya untuk menandakan modul bisa diimpor dan mengecek konfigurasi URL."""
+    """Memeriksa konfigurasi URL saat startup."""
     print("LOKAL AI: Modul pemanggil API Colab siap.")
-    if not COLAB_API_BASE_URL or COLAB_API_BASE_URL == "GANTI_DENGAN_URL_NGROK_COLAB_ANDA":
-        print("LOKAL AI: PERINGATAN! URL Ngrok untuk Colab belum dikonfigurasi dengan benar di .env atau kode utils/ai_models.py.")
-    pass
+    if not COLAB_API_BASE_URL:
+        print("LOKAL AI: PERINGATAN! URL Colab belum dikonfigurasi di file .env")
+

@@ -1,4 +1,4 @@
-# File: models/analysis_models.py (File BARU)
+# File: models/analysis_models.py
 
 from pydantic import BaseModel
 from typing import List, Optional
@@ -13,6 +13,6 @@ class WeaknessConcept(BaseModel):
 class DeepAnalysisResult(BaseModel):
     """Skema untuk hasil analisis mendalam yang dikembalikan ke frontend."""
     user_id: str
-    summary_text: str # Ringkasan teks, misal "Analisis menunjukkan Anda kuat di Sejarah tapi perlu perbaikan di Sains."
-    weakest_concepts: List[WeaknessConcept] # Daftar konsep terlemah
-    example_incorrect_questions: List[str] # Beberapa contoh teks pertanyaan yang sering salah
+    summary_text: str 
+    weakest_concepts: List[WeaknessConcept]
+    example_incorrect_questions: List[str] 

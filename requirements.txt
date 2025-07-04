@@ -13,5 +13,8 @@ requests
 wikipedia
 html5lib
 beautifulsoup4
-sentence-transformers>=2.2.0 # Atau versi terbaru
-scikit-learn # Untuk cosine_similarity jika tidak pakai util dari sentence-transformers
+# sentence-transformers>=2.2.0 # Atau versi terbaru
+# scikit-learn # Untuk cosine_similarity jika tidak pakai util dari sentence-transformers
+joblib
+mistralai
+httpx

@@ -1,5 +1,5 @@
 import { API_BASE_URL } from './config.js';
-import { state, updateState } from './state.js';
+import { state, updateState, resetUserSession} from './state.js';
 import * as ui from './ui_handlers.js';
 import * as quiz from './quiz_api.js';
 import { elements } from './dom_elements.js';
@@ -137,6 +137,7 @@ export async function handleLogin(event) {
 export function handleLogout() {
     ui.showLoading(); 
     console.log("Logging out...");
+    resetUserSession();
     
     updateState({
         authToken: null,
@@ -148,6 +149,7 @@ export function handleLogout() {
     });
     
     ui.updateAuthUI(); 
+    ui.clearUserSessionUI();
     ui.showView('setup'); 
     console.log("Logged out."); 
     ui.hideLoading();

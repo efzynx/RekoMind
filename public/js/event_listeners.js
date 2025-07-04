@@ -7,7 +7,8 @@ import { state } from './state.js';
 import { updateState } from './state.js';
 import { API_BASE_URL } from './config.js';
 import * as adminAPI from './admin_api.js';
-import * as analysisAPI from './analysis_api.js';
+// import * as analysisAPI from './analysis_api.js';
+import { runAndDisplayHolisticAnalysis } from './analysis_api.js';
 
 
 
@@ -28,7 +29,8 @@ async function handleDeepAnalysisClick() {
 export function setupEventListeners() {
     console.log("Attaching event listeners...");
 
-    elements.runDeepAnalysisBtn?.addEventListener('click', handleDeepAnalysisClick);
+    // elements.runDeepAnalysisBtn?.addEventListener('click', handleDeepAnalysisClick);
+    elements.runDeepAnalysisBtn?.addEventListener('click', runAndDisplayHolisticAnalysis);
     
     // Navigation
     elements.showLoginBtn?.addEventListener('click', () => { 
@@ -209,6 +211,7 @@ export function setupEventListeners() {
         } 
     });
 
+    /*
     elements.showHistoryBtn?.addEventListener('click', async () => {
     ui.showView('history');
     await history.fetchAndDisplayHistory();
@@ -220,6 +223,11 @@ export function setupEventListeners() {
         if (elements.deepAnalysisResults)
             elements.deepAnalysisResults.innerHTML = `<p class="text-red-500 italic">Gagal memuat analisis: ${error.message}</p>`;
     }
+});*/
+
+elements.showHistoryBtn?.addEventListener('click', () => {
+    ui.showView('history');
+    history.fetchAndDisplayHistory(); // Cukup panggil fungsi untuk menampilkan riwayat
 });
     
     // Reset quiz button

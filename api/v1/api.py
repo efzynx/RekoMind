@@ -12,7 +12,7 @@ api_router.include_router(recommendations.router, prefix="/recommendations", tag
 # Sertakan router dari endpoint history BARU
 api_router.include_router(history.router, prefix="/history", tags=["History"]) 
 
-# Tambahkan router lain jika ada
+# Rauter Admin
 api_router.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
 # Router analysis
